@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>RouteSetter AI - Spray Wall Bouldering</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <span class="logo-icon">🧗</span>
+        <div>
+          <h1>RouteSetter <span class="tag">Vision AI</span></h1>
+          <span class="subtitle">Spray Wall Útvonal Tervező</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="history-btn" class="icon-btn" title="Korábbi mászások">
+          📜 <span id="history-count-badge" class="badge">0</span>
+        </button>
+        <button id="settings-btn" class="icon-btn" title="Beállítások / API Kulcs">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-layout">
+      <!-- Wall View Area (Canvas / Image Container with Pan-Zoom) -->
+      <section class="wall-section">
+        <div class="wall-viewport" id="viewport">
+          <div class="wall-container" id="wall-container">
+            <img id="wall-img" src="/pic/wall.jpg" alt="Mászófal spray wall" draggable="false">
+            <svg id="route-svg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+
+        <div class="zoom-controls">
+          <button id="zoom-in" title="Nagyítás">+</button>
+          <button id="zoom-out" title="Kicsinyítés">-</button>
+          <button id="zoom-reset" title="Visszaállítás">⟲</button>
+        </div>
+
+        <div class="status-overlay" id="status-overlay" style="display: none;">
+          <div class="spinner"></div>
+          <p id="status-text">Az AI elemzi a falat és generálja a bouldert...</p>
+        </div>
+      </section>
+
+      <!-- Sidebar / Controls Area -->
+      <aside class="sidebar">
+        <!-- Generator Controls Card -->
+        <div class="card controls-card">
+          <h2>Új Boulder Tervezése</h2>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="grade-select">Célzott nehézség:</label>
+              <select id="grade-select">
+                <option value="5C">5C (Könnyű)</option>
+                <option value="6A" selected>6A (Közepes)</option>
+                <option value="6A+">6A+</option>
+                <option value="6B">6B (Haladó)</option>
+                <option value="6B+">6B+</option>
+                <option value="6C">6C</option>
+                <option value="7A">7A (Kemény)</option>
+                <option value="7B">7B</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="style-select">Karakter / Stílus:</label>
+              <select id="style-select">
+                <option value="All-round" selected>Mindenféle</option>
+                <option value="Jugs / Big Moves">Kancsós / Dinamikus</option>
+                <option value="Crimps / Technical">Peremes / Technikai</option>
+                <option value="Slopers / Body Tension">Lapos / Feszültséges</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="rule-hint">
+            💡 <strong>Szabály:</strong> Nyílt lábak ("Open feet"). A körök kézfogások, bármit léphetsz!
+          </div>
+
+          <button id="generate-btn" class="btn btn-primary">
+            ✨ Boulder Generálása
+          </button>
+        </div>
+
+        <!-- Active Boulder Details Card -->
+        <div class="card boulder-card" id="boulder-card" style="display: none;">
+          <div class="boulder-header">
+            <div>
+              <h3 id="boulder-name">Boulder neve</h3>
+              <div class="badges">
+                <span id="boulder-grade" class="badge grade-badge">6A</span>
+                <span id="boulder-style" class="badge style-badge">Technikai</span>
+                <span id="boulder-mode" class="badge mode-badge">AI Live</span>
+              </div>
+            </div>
+          </div>
+
+          <p id="boulder-desc" class="boulder-desc">Beta leírás...</p>
+
+          <div class="holds-list-container">
+            <h4>Fogások sorrendje:</h4>
+            <ul id="holds-list" class="holds-list"></ul>
+          </div>
+
+          <!-- Feedback Section -->
+          <div class="feedback-box">
+            <h4>Mászási visszajelzés (Ágens tanítása):</h4>
+            <div class="feedback-buttons">
+              <button class="fb-btn btn-send" data-result="sent">
+                ✅ Sikerült (Send)
+              </button>
+              <button class="fb-btn btn-fail" data-result="failed">
+                ❌ Nem sikerült
+              </button>
+            </div>
+
+            <div id="difficulty-feedback" class="difficulty-feedback" style="display: none;">
+              <label>Milyennek érezted a nehézséget?</label>
+              <div class="diff-btn-group">
+                <button class="diff-btn" data-diff="too_easy">🟢 Túl könnyű</button>
+                <button class="diff-btn active" data-diff="just_right">🟡 Pont jó</button>
+                <button class="diff-btn" data-diff="too_hard">🔴 Túl nehéz</button>
+              </div>
+              <button id="submit-feedback-btn" class="btn btn-secondary">
+                Visszajelzés mentése
+              </button>
+            </div>
+            <div id="feedback-success-msg" class="feedback-success-msg" style="display: none;">
+              ✨ Köszönöm! Az ágens figyelembe veszi ezt a következő útnál.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Beállítások & Gemini API</h3>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p>Az élő képfelismeréshez egy ingyenes Google Gemini API kulcs szükséges.</p>
+          <div class="form-group">
+            <label for="api-key-input">Gemini API Kulcs:</label>
+            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+            <small>Kulcs nélkül az app beépített demó bouldereket mutat.</small>
+          </div>
+          <div class="key-help">
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">
+              🔗 Ingyenes Gemini API kulcs igénylése Google AI Studio-ban
+            </a>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="save-settings-btn" class="btn btn-primary">Mentés</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Mászási Előzmények & Statisztika</h3>
+          <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="history-summary" class="history-summary">
+            Összesen 0 mászás naplózva.
+          </div>
+          <div id="history-list" class="history-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
