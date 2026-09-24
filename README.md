@@ -60,6 +60,24 @@ python -c "import platform; print(platform.machine())"
 
 Ennek `arm64` értéket kell kiírnia.
 
+### Meglévő szerver leállítása és új indítása
+
+Ha a `8008`-as port már használatban van, először keresd meg az azt használó
+Uvicorn-folyamatot:
+
+```bash
+lsof -nP -iTCP:8008 -sTCP:LISTEN
+```
+
+A kimenetben keresd meg a folyamat `PID` értékét, majd állítsd le:
+
+```bash
+kill <PID>
+```
+
+Ha a szerver az aktuális terminálban fut, a `Ctrl+C` billentyűkombinációval is
+leállítható. Ezután indíts új szervert:
+
 ```bash
 .venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8008
 ```
