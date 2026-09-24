@@ -16,6 +16,8 @@ let startY = 0;
 let initialDistance = 0;
 let initialScale = 1;
 
+let showLines = false;
+
 // Elements
 const wallContainer = document.getElementById('wall-container');
 const viewport = document.getElementById('viewport');
@@ -25,6 +27,7 @@ const gradeSelect = document.getElementById('grade-select');
 const styleSelect = document.getElementById('style-select');
 const statusOverlay = document.getElementById('status-overlay');
 const statusText = document.getElementById('status-text');
+const showLinesToggle = document.getElementById('show-lines-toggle');
 
 // Boulder card elements
 const boulderCard = document.getElementById('boulder-card');
@@ -174,6 +177,15 @@ function setupPanZoom() {
 function setupEventListeners() {
   generateBtn.addEventListener('click', handleGenerateBoulder);
 
+  if (showLinesToggle) {
+    showLinesToggle.addEventListener('change', (e) => {
+      showLines = e.target.checked;
+      if (currentBoulder) {
+        renderSvgHolds(currentBoulder.holds);
+      }
+    });
+  }
+
   // Feedback buttons
   feedbackButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -308,7 +320,7 @@ function renderSvgHolds(holds) {
     return (a.sequence || 0) - (b.sequence || 0);
   });
 
-  if (sortedHolds.length > 1) {
+  if (sortedHolds.length > 1 && showLines) {
     let pathD = `M ${sortedHolds[0].x} ${sortedHolds[0].y}`;
     for (let i = 1; i < sortedHolds.length; i++) {
       pathD += ` L ${sortedHolds[i].x} ${sortedHolds[i].y}`;
@@ -316,6 +328,7 @@ function renderSvgHolds(holds) {
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', pathD);
     path.setAttribute('class', 'route-path-line');
+    path.setAttribute('fill', 'none');
     routeSvg.appendChild(path);
   }
 

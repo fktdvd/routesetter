@@ -223,7 +223,8 @@ body {
 }
 
 .route-path-line {
-  stroke: rgba(255, 255, 255, 0.4);
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.5);
   stroke-width: 0.35;
   stroke-dasharray: 1, 0.8;
 }
