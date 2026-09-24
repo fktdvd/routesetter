@@ -28,6 +28,8 @@ const styleSelect = document.getElementById('style-select');
 const statusOverlay = document.getElementById('status-overlay');
 const statusText = document.getElementById('status-text');
 const showLinesToggle = document.getElementById('show-lines-toggle');
+const apiStatusBadge = document.getElementById('api-status-badge');
+let serverHasApiKey = false;
 
 // Boulder card elements
 const boulderCard = document.getElementById('boulder-card');
@@ -62,7 +64,30 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   loadSettings();
   loadHistoryCount();
+  checkServerStatus();
 });
+
+async function checkServerStatus() {
+  try {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+    serverHasApiKey = data.has_api_key;
+    const localKey = localStorage.getItem('routesetter_gemini_key');
+    const active = serverHasApiKey || Boolean(localKey);
+    
+    if (apiStatusBadge) {
+      if (active) {
+        apiStatusBadge.textContent = '⚡ AI Live (Aktív)';
+        apiStatusBadge.className = 'api-status-badge live';
+      } else {
+        apiStatusBadge.textContent = '💡 Demó Mód';
+        apiStatusBadge.className = 'api-status-badge demo';
+      }
+    }
+  } catch (e) {
+    console.warn("Status check failed", e);
+  }
+}
 
 // Load settings from localStorage
 function loadSettings() {
@@ -241,8 +266,9 @@ async function handleGenerateBoulder() {
   const targetGrade = gradeSelect.value;
   const targetStyle = styleSelect.value;
   const apiKey = localStorage.getItem('routesetter_gemini_key') || '';
+  const isLive = serverHasApiKey || Boolean(apiKey);
 
-  showLoading(apiKey ? "AI elemzi a képet és fogásokat keres..." : "Demó boulder betöltése...");
+  showLoading(isLive ? "AI elemzi a fal fotóját és fogásokat keres..." : "Demó boulder betöltése...");
 
   try {
     const res = await fetch('/api/generate', {

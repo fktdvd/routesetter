@@ -102,6 +102,14 @@ def serve_index():
         return FileResponse(index_path)
     return {"message": "RouteSetter AI API fut. Helyezd el a static/index.html fájlt!"}
 
+@app.get("/api/status")
+def get_status():
+    has_env_key = bool(os.environ.get("GEMINI_API_KEY"))
+    return {
+        "has_api_key": has_env_key,
+        "mode": "ai_live" if has_env_key else "demo"
+    }
+
 @app.get("/api/history")
 def get_history():
     history = load_history()

@@ -87,7 +87,30 @@ body {
 
 .header-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
+}
+
+.api-status-badge {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+}
+
+.api-status-badge.live {
+  background: rgba(0, 230, 118, 0.15);
+  color: var(--start-color);
+  border: 1px solid rgba(0, 230, 118, 0.3);
+}
+
+.api-status-badge.demo {
+  background: rgba(255, 171, 0, 0.15);
+  color: #ffab00;
+  border: 1px solid rgba(255, 171, 0, 0.3);
 }
 
 .icon-btn {
