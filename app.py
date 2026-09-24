@@ -12,6 +12,17 @@ import requests
 app = FastAPI(title="RouteSetter AI - Vision Prototype")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Load .env if present
+env_file = os.path.join(BASE_DIR, ".env")
+if os.path.exists(env_file):
+    with open(env_file, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, val = line.split("=", 1)
+                os.environ[key.strip()] = val.strip().strip("'\"")
+
 PIC_DIR = os.path.join(BASE_DIR, "pic")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
@@ -187,9 +198,8 @@ Respond ONLY with valid JSON following this exact structure:
 }}"""
 
     models_to_try = [
-        "gemini-2.5-flash",
-        "gemini-1.5-flash",
-        "gemini-2.0-flash"
+        "gemini-3-flash-preview",
+        "gemini-3.1-flash-lite-preview"
     ]
 
     last_error = None
@@ -211,16 +221,45 @@ Respond ONLY with valid JSON following this exact structure:
             ],
             "generationConfig": {
                 "response_mime_type": "application/json",
+                "thinkingConfig": {"thinkingBudget": 0},
                 "temperature": 0.7
             }
         }
 
         try:
-            resp = requests.post(url, json=payload, timeout=45)
+            resp = requests.post(url, json=payload, timeout=30)
             if resp.status_code == 200:
                 data = resp.json()
                 raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
                 parsed = json.loads(raw_text)
+
+                # Normalize response format
+                if isinstance(parsed, list):
+                    parsed = {
+                        "name": f"{req.target_grade} AI Projekt",
+                        "grade": req.target_grade,
+                        "style": req.target_style,
+                        "description": "AI által generált útvonal.",
+                        "holds": parsed
+                    }
+                
+                holds = parsed.get("holds", [])
+                for idx, h in enumerate(holds):
+                    if "x_percentage" in h and "x" not in h:
+                        h["x"] = h["x_percentage"]
+                    if "y_percentage" in h and "y" not in h:
+                        h["y"] = h["y_percentage"]
+                    role = str(h.get("role", "intermediate")).lower()
+                    if "start" in role:
+                        h["role"] = "start"
+                    elif "top" in role or "finish" in role:
+                        h["role"] = "top"
+                    else:
+                        h["role"] = "intermediate"
+                        if "sequence" not in h:
+                            h["sequence"] = idx
+
+                parsed["holds"] = holds
                 parsed["id"] = f"ai_{int(datetime.now().timestamp())}"
                 return {
                     "success": True,
