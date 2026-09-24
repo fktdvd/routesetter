@@ -27,16 +27,42 @@ A cél egy **AI-vezérelt Route Setter (útépítő)** létrehozása, amely:
 
 ## 🗺️ Lépésről-lépésre (Baby Steps Roadmap)
 
-- [ ] **1. lépés: Útvonal-generáló ágens alapjai**
-  - Hogyan reprezentáljuk a falat és a fogásokat az AI számára?
-  - Alap prompt és kimeneti séma (JSON: start, intermediates, top).
-- [ ] **2. lépés: Webes megjelenítő prototípus (Frontend)**
-  - A fal képének megjelenítése ([`pic/FullSizeRender-preview.HEIC`](file:///Users/feketedavid/Documents/GitHub/routesetter/pic/FullSizeRender-preview.HEIC) konvertálva/optimalizálva webre).
-  - Az AI által generált pontok/fogások vizuális kirajzolása (színes karikák: zöld, kék, piros).
-  - Mobilos böngészőre optimalizált nézet (érintés, zoom/pan).
-- [ ] **3. lépés: Visszajelzés modul (Feedback UI)**
-  - Gombok: "Megmásztam" / "Nem sikerült".
-  - Nehézségi értékelés bekérése.
-- [ ] **4. lépés: Memória és adaptáció (Learning Agent)**
-  - Korábbi próbálkozások mentése (helyi tárhely vagy adatbázis).
-  - A prompt kiegészítése a korábbi történettel (few-shot / in-context learning).
+- [x] **1. lépés: Útvonal-generáló ágens alapjai**
+  - Multimodális Gemini 3 Vision integráció és JSON kimenet.
+- [x] **2. lépés: Webes megjelenítő prototípus (Frontend)**
+  - Interaktív pan & zoom felület neon fogásjelölésekkel.
+- [x] **3. lépés: Visszajelzés modul (Feedback UI)**
+  - Send/Attempt és nehézség visszajelzés (`data/history.json`).
+- [x] **4. lépés: Memória és adaptáció (Learning Agent)**
+  - Az előzmények visszacsatolása az AI promptba.
+
+---
+
+## 🚀 Szerver indítása kézzel
+
+Ha újraindítod a gépet vagy külön terminálablakból szeretnéd futtatni a szervert:
+
+### 1. Előkészületek (ha új gépen vagy):
+```bash
+# Virtuális környezet létrehozása és csomagok telepítése
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. API kulcs beállítása:
+Hozz létre egy `.env` fájlt a projekt gyökerében:
+```bash
+GEMINI_API_KEY=a_te_gemini_api_kulcsod
+```
+
+### 3. Szerver indítása:
+```bash
+.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8008
+```
+*(vagy aktivált venv mellett: `python -m uvicorn app:app --host 0.0.0.0 --port 8008`)*
+
+### 4. Megnyitás a böngészőben:
+* **Számítógépen:** [http://localhost:8008](http://localhost:8008)
+* **Telefonon (azonos Wi-Fi hálózaton):** `http://<geped_ip_cime>:8008` (pl. `http://192.168.0.13:8008`)
+
