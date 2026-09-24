@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>RouteSetter - Fogásleltár</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>🧗 RouteSetter</h1>
+      <p>Fogásleltározó</p>
+    </div>
+    <div class="header-actions">
+      <a class="nav-link active" href="/inventory">Fogásleltár</a>
+      <a class="nav-link" href="/generator">Boulder generátor</a>
+      <span id="save-state" class="save-state">Betöltés...</span>
+      <button id="save-btn" class="button primary">Mentés</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="wall-panel">
+      <div id="viewport" class="viewport">
+        <div id="wall-container" class="wall-container">
+          <img id="wall-image" src="/pic/wall.jpg" alt="Mászófal" draggable="false">
+          <svg id="holds-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Fogásjelölések"></svg>
+        </div>
+        <div id="empty-state" class="empty-state">Kattints a falon egy fogás közepére.</div>
+      </div>
+      <div class="zoom-controls">
+        <button id="zoom-out" class="button" title="Kicsinyítés">−</button>
+        <button id="zoom-reset" class="button" title="Nézet visszaállítása">100%</button>
+        <button id="zoom-in" class="button" title="Nagyítás">+</button>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="card">
+        <h2>Fogás hozzáadása</h2>
+        <p class="hint">Válassz típust, majd kattints a fogás közepére. A számokat a billentyűzeten is használhatod.</p>
+        <div id="type-picker" class="type-picker">
+          <button class="type-button active jug" data-type="jug" data-key="1"><span>1</span> Kancsó</button>
+          <button class="type-button crimp" data-type="crimp" data-key="2"><span>2</span> Perem</button>
+          <button class="type-button sloper" data-type="sloper" data-key="3"><span>3</span> Sloper</button>
+          <button class="type-button pinch" data-type="pinch" data-key="4"><span>4</span> Zseb / Pinch</button>
+        </div>
+        <div class="editor-status">
+          <span class="status-dot"></span>
+          <span id="editor-status">Szerkesztési mód aktív</span>
+        </div>
+      </section>
+
+      <section class="card stats-card">
+        <div><strong id="hold-count">0</strong><span>fogás</span></div>
+        <div><strong id="selected-type">Kancsó</strong><span>kiválasztott típus</span></div>
+      </section>
+
+      <section class="card">
+        <h2>Gyors használat</h2>
+        <ol class="instructions">
+          <li>Kattints minden fogás közepére.</li>
+          <li>Ha mellékattintottál, kattints a jelölésre a törléshez.</li>
+          <li>Mentés után az adatok a <code>data/holds.json</code> fájlba kerülnek.</li>
+        </ol>
+        <button id="clear-btn" class="button danger">Összes jelölés törlése</button>
+      </section>
+    </aside>
+  </main>
+  <script src="/static/app.js?v=8"></script>
+</body>
+</html>

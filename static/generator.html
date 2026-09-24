@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>RouteSetter - Boulder generátor</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>🧗 RouteSetter</h1>
+      <p>Boulder generátor</p>
+    </div>
+    <div class="header-actions">
+      <a class="nav-link" href="/inventory">Fogásleltár</a>
+      <a class="nav-link active" href="/generator">Boulder generátor</a>
+    </div>
+  </header>
+  <main class="layout">
+    <section class="wall-panel">
+      <div id="generator-viewport" class="viewport generator-viewport">
+        <div class="wall-container">
+          <img id="generator-wall-image" src="/pic/wall.jpg" alt="Mászófal" draggable="false">
+          <svg id="generator-layer" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+      <div class="zoom-controls">
+        <button id="generator-zoom-out" class="button">−</button>
+        <button id="generator-zoom-reset" class="button">100%</button>
+        <button id="generator-zoom-in" class="button">+</button>
+      </div>
+    </section>
+    <aside class="sidebar">
+      <section class="card">
+        <h2>Új boulder</h2>
+        <p class="hint">Az útvonal kizárólag a mentett fogásleltárból készül.</p>
+        <div class="form-group">
+          <label for="grade-select">Nehézség:</label>
+          <select id="grade-select">
+            <option>5C</option><option selected>6A</option><option>6A+</option>
+            <option>6B</option><option>6B+</option><option>6C</option><option>7A</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="style-select">Stílus:</label>
+          <select id="style-select">
+            <option selected>All-round</option>
+            <option>Jugs / Big Moves</option>
+            <option>Crimps / Technical</option>
+            <option>Slopers / Body Tension</option>
+          </select>
+        </div>
+        <button id="generate-btn" class="button primary generator-button">Boulder generálása</button>
+        <p id="route-status" class="route-status" aria-live="polite"></p>
+      </section>
+      <section class="card">
+        <h2>Útvonal sorrendje</h2>
+        <ol id="route-list" class="route-list"></ol>
+      </section>
+      <p id="inventory-status" class="hint generator-inventory-status">Leltár betöltése...</p>
+    </aside>
+  </main>
+  <script src="/static/generator.js?v=7"></script>
+</body>
+</html>

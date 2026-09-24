@@ -27,16 +27,44 @@ A cél egy **AI-vezérelt Route Setter (útépítő)** létrehozása, amely:
 
 ## 🗺️ Lépésről-lépésre (Baby Steps Roadmap)
 
-- [ ] **1. lépés: Útvonal-generáló ágens alapjai**
-  - Hogyan reprezentáljuk a falat és a fogásokat az AI számára?
-  - Alap prompt és kimeneti séma (JSON: start, intermediates, top).
-- [ ] **2. lépés: Webes megjelenítő prototípus (Frontend)**
-  - A fal képének megjelenítése ([`pic/FullSizeRender-preview.HEIC`](file:///Users/feketedavid/Documents/GitHub/routesetter/pic/FullSizeRender-preview.HEIC) konvertálva/optimalizálva webre).
-  - Az AI által generált pontok/fogások vizuális kirajzolása (színes karikák: zöld, kék, piros).
-  - Mobilos böngészőre optimalizált nézet (érintés, zoom/pan).
-- [ ] **3. lépés: Visszajelzés modul (Feedback UI)**
-  - Gombok: "Megmásztam" / "Nem sikerült".
-  - Nehézségi értékelés bekérése.
-- [ ] **4. lépés: Memória és adaptáció (Learning Agent)**
-  - Korábbi próbálkozások mentése (helyi tárhely vagy adatbázis).
-  - A prompt kiegészítése a korábbi történettel (few-shot / in-context learning).
+- [x] **1. lépés: Kattintásos fogásleltár**
+  - A fal képén egy kattintás egy fogást rögzít `x`, `y` koordinátával.
+  - Gyors típusválasztó: kancsó, perem, sloper, zseb/pinch.
+  - Meglévő jelölésre kattintva törölhető, a teljes leltár menthető.
+- [ ] **2. lépés: Útvonal-generáló ágens**
+  - A generátor csak a `data/holds.json` leltárból választhat kézfogásokat, ezért nem talál ki új koordinátákat.
+- [ ] **3. lépés: Visszajelzés, memória és adaptáció**
+  - Korábbi próbálkozások mentése és a prompt kiegészítése a mászói történettel.
+
+## 🧭 Fogásleltározó használata
+
+### Telepítés Apple Silicon Macen
+
+Ha `pydantic_core ... incompatible architecture` hiba jelenik meg, a `.venv`
+korábban Intel/x86 Python alatt készült. Hozd létre újra natív ARM64 Pythonnal:
+
+```bash
+deactivate 2>/dev/null || true
+rm -rf .venv
+arch -arm64 python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
+
+Ellenőrzés:
+
+```bash
+python -c "import platform; print(platform.machine())"
+```
+
+Ennek `arm64` értéket kell kiírnia.
+
+```bash
+.venv/bin/python -m uvicorn app:app --host 0.0.0.0 --port 8008
+```
+
+Nyisd meg a `http://localhost:8008` címet. Válassz fogástípust (vagy nyomd meg az
+`1`–`4` billentyűk egyikét), majd kattints a falon a fogás közepére. Egy meglévő
+jelölésre kattintva törölheted, a **Mentés** gomb pedig a `data/holds.json` fájlba
+írja a leltárt. A jelölések húzással áthelyezhetők, kattintással törölhetők.
